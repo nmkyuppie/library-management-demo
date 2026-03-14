@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!form) return;
 
     if (sessionStorage.getItem('library_logged_in_user')) {
-        window.location.href = '/admin.html';
+        window.location.href = './admin.html';
     }
 
     form.addEventListener('submit', (e) => {
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const user = login(email, password);
         if (user) {
             sessionStorage.setItem('library_logged_in_user', JSON.stringify(user));
-            window.location.href = '/admin.html';
+            window.location.href = './admin.html';
         } else {
             alert('Invalid credentials. Please verify your email and password.');
         }

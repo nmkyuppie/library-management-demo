@@ -2,11 +2,11 @@ import { getBooks, getBookById, addBook, updateBook, deleteBook, saveBooks } fro
 
 document.addEventListener('DOMContentLoaded', () => {
     // ── Auth ────────────────────────────────────
-    if (!sessionStorage.getItem('library_logged_in_user')) { window.location.href = '/'; return; }
+    if (!sessionStorage.getItem('library_logged_in_user')) { window.location.href = './index.html'; return; }
     document.getElementById('logout-btn')?.addEventListener('click', e => {
         e.preventDefault();
         sessionStorage.removeItem('library_logged_in_user');
-        window.location.href = '/';
+        window.location.href = './index.html';
     });
 
     // ── State ───────────────────────────────────
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td><input type="checkbox" class="book-checkbox" data-id="${book.id}"
                             data-testid="book-checkbox-${book.id}" ${isChecked ? 'checked' : ''}></td>
                         <td>
-                            <a href="/book-detail.html?id=${book.id}" target="_blank"
+                            <a href="./book-detail.html?id=${book.id}" target="_blank"
                                 data-testid="book-link-${book.id}"
                                 style="color:var(--text-dark);font-weight:600;text-decoration:none;display:flex;align-items:center;gap:0.4rem;">
                                 ${book.title}

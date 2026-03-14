@@ -2,12 +2,12 @@ import { getUsers, getUserById, addUser, updateUser, deleteUser } from './db.js'
 
 document.addEventListener('DOMContentLoaded', () => {
     const loggedInUser = sessionStorage.getItem('library_logged_in_user');
-    if (!loggedInUser) { window.location.href = '/'; return; }
+    if (!loggedInUser) { window.location.href = './index.html'; return; }
 
     document.getElementById('logout-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         sessionStorage.removeItem('library_logged_in_user');
-        window.location.href = '/';
+        window.location.href = './index.html';
     });
 
     const tbody = document.getElementById('users-tbody');
