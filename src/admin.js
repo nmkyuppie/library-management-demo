@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.querySelectorAll('.view-user-btn').forEach(btn => {
             btn.addEventListener('click', e => {
-                if (iframe) iframe.src = `/user-detail.html?id=${e.currentTarget.dataset.id}`;
+                if (iframe) iframe.src = `./user-detail.html?id=${e.currentTarget.dataset.id}`;
             });
         });
 
