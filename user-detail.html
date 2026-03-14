@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Detail</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="/src/style.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--bg);
+        }
+    </style>
+</head>
+
+<body>
+    <div style="width:100%; padding:1.5rem;">
+        <div id="empty-state" class="empty-state">
+            <i class="ph ph-user-circle"></i>
+            <p>No user selected.<br>Click <strong>View</strong> on a row above.</p>
+        </div>
+
+        <div id="user-info" style="display:none;">
+            <div style="text-align:center; margin-bottom:1.5rem;">
+                <div id="detail-photo-container"
+                    style="width:64px;height:64px;border-radius:50%;background:var(--black);display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem;overflow:hidden;">
+                    <i id="detail-icon" class="ph-fill ph-user" style="font-size:1.75rem;color:var(--primary);"></i>
+                    <img id="detail-image" src="" alt="Profile"
+                        style="width:100%;height:100%;object-fit:cover;display:none;">
+                </div>
+                <h2 id="detail-name" style="font-size:1.1rem;font-weight:700;"></h2>
+                <span id="detail-role-badge" class="badge" style="margin-top:0.35rem;"></span>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label"><i class="ph ph-hash"></i> User ID</div>
+                <div class="detail-value" id="detail-id" data-testid="iframe-user-id"></div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label"><i class="ph ph-envelope"></i> Email Address</div>
+                <div class="detail-value" id="detail-email" data-testid="iframe-user-email"></div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label"><i class="ph ph-shield-check"></i> Role</div>
+                <div class="detail-value" id="detail-role" data-testid="iframe-user-role"
+                    style="text-transform:capitalize;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getUserById } from '/src/db.js';
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const userId = params.get('id');
+            if (userId) {
+                const user = getUserById(userId);
+                if (user) {
+                    document.getElementById('empty-state').style.display = 'none';
+                    document.getElementById('user-info').style.display = 'block';
+                    document.getElementById('detail-name').textContent = user.name;
+                    document.getElementById('detail-id').textContent = user.id;
+                    document.getElementById('detail-email').textContent = user.email;
+                    document.getElementById('detail-role').textContent = user.role;
+                    const badge = document.getElementById('detail-role-badge');
+                    badge.textContent = user.role;
+                    badge.className = `badge badge-${user.role}`;
+
+                    // Handle Profile Photo
+                    const img = document.getElementById('detail-image');
+                    const icon = document.getElementById('detail-icon');
+                    if (user.photo) {
+                        img.src = user.photo;
+                        img.style.display = 'block';
+                        icon.style.display = 'none';
+                    } else {
+                        img.style.display = 'none';
+                        icon.style.display = 'block';
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

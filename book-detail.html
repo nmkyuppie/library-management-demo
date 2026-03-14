@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="/src/style.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--bg);
+        }
+    </style>
+</head>
+
+<body>
+    <div style="width:100%; max-width:480px; padding:2rem;">
+        <div class="card" id="book-card">
+
+            <!-- Header -->
+            <div
+                style="display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border);">
+                <div
+                    style="width:48px;height:48px;border-radius:12px;background:var(--black);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="ph-fill ph-book-open" style="font-size:1.4rem;color:var(--primary);"></i>
+                </div>
+                <div>
+                    <div
+                        style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-light);">
+                        Book Details</div>
+                    <div id="detail-title" style="font-size:1.05rem;font-weight:800;color:var(--text-dark);"
+                        data-testid="window-book-title"></div>
+                </div>
+            </div>
+
+            <!-- Tabs (Feature #10) -->
+            <div class="tab-bar detail-tabs">
+                <button class="tab-btn active" data-tab="details" data-testid="detail-tab-details">Details</button>
+                <button class="tab-btn" data-tab="notes" data-testid="detail-tab-notes">
+                    <i class="ph ph-note-pencil"></i> Notes
+                </button>
+            </div>
+
+            <!-- Details Tab -->
+            <div id="tab-details" class="tab-content active">
+                <div class="detail-item">
+                    <div class="detail-label">Internal ID</div>
+                    <div class="detail-value" id="detail-id" data-testid="window-book-id"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Author</div>
+                    <div class="detail-value" id="detail-author" data-testid="window-book-author"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Genre</div>
+                    <div id="detail-genre" data-testid="window-book-genre"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Published Date</div>
+                    <div class="detail-value" id="detail-published" data-testid="window-book-published"></div>
+                </div>
+                <div class="detail-item" id="detail-tags-wrap" style="display:none;">
+                    <div class="detail-label">Tags</div>
+                    <div id="detail-tags" data-testid="window-book-tags"></div>
+                </div>
+            </div>
+
+            <!-- Notes Tab -->
+            <div id="tab-notes" class="tab-content">
+                <div class="form-group" style="margin-bottom:0.75rem;">
+                    <label for="book-notes-area" style="margin-bottom:0.5rem;display:block;">Your notes about this
+                        book</label>
+                    <textarea id="book-notes-area" class="notes-area" data-testid="book-notes-area"
+                        placeholder="Type your personal notes about this book here…"></textarea>
+                </div>
+                <button id="save-notes-btn" class="btn btn-primary" style="width:100%;" data-testid="save-notes-btn">
+                    <i class="ph ph-floppy-disk"></i> Save Notes
+                </button>
+                <p id="notes-saved-msg"
+                    style="text-align:center;font-size:0.8rem;color:var(--success);margin-top:0.5rem;display:none;"
+                    data-testid="notes-saved-msg">
+                    <i class="ph ph-check-circle"></i> Notes saved!
+                </p>
+            </div>
+
+            <button onclick="window.close()" data-testid="window-close-btn" class="btn btn-ghost"
+                style="width:100%;margin-top:1rem;">
+                <i class="ph ph-x-circle"></i> Close Window
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getBookById, getBookNote, saveBookNote } from '/src/db.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const bookId = params.get('id');
+
+            if (!bookId) return;
+
+            const book = getBookById(bookId);
+            if (!book) {
+                document.getElementById('book-card').innerHTML = `
+                    <div class="empty-state"><i class="ph ph-warning-circle"></i><p>Book not found.</p></div>`;
+                return;
+            }
+
+            // Populate
+            document.title = book.title + ' — Book Details';
+            document.getElementById('detail-id').textContent = book.id;
+            document.getElementById('detail-title').textContent = book.title;
+            document.getElementById('detail-author').textContent = book.author;
+            document.getElementById('detail-published').textContent = book.published;
+            document.getElementById('detail-genre').innerHTML =
+                `<span class="badge badge-editor">${book.genre}</span>`;
+
+            if (book.tags && book.tags.length) {
+                document.getElementById('detail-tags-wrap').style.display = '';
+                document.getElementById('detail-tags').innerHTML =
+                    book.tags.map(t => `<span class="badge badge-viewer" style="margin:0.1rem;">${t}</span>`).join('');
+            }
+
+            // Tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+                });
+            });
+
+            // Notes
+            const notesArea = document.getElementById('book-notes-area');
+            notesArea.value = getBookNote(bookId);
+
+            document.getElementById('save-notes-btn').addEventListener('click', () => {
+                saveBookNote(bookId, notesArea.value);
+                const msg = document.getElementById('notes-saved-msg');
+                msg.style.display = 'block';
+                setTimeout(() => { msg.style.display = 'none'; }, 2000);
+            });
+        });
+    </script>
+</body>
+
+</html>

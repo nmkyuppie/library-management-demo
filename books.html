@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibraryMS — Books</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+
+<body>
+
+    <header>
+        <a href="/admin.html" class="brand">
+            <div class="brand-icon"><i class="ph-fill ph-books"></i></div>
+            LibraryMS
+        </a>
+        <nav>
+            <a href="/admin.html" data-testid="nav-admin">
+                <i class="ph ph-users-three"></i> Admin Users
+            </a>
+            <a href="/books.html" class="active" data-testid="nav-books">
+                <i class="ph ph-book-open"></i> Books
+            </a>
+            <a href="#" id="logout-btn" class="nav-logout" data-testid="nav-logout">
+                <i class="ph ph-sign-out"></i> Logout
+            </a>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <!-- Search Bar (Feature #2 + #14 Ctrl+K) -->
+        <div class="search-bar-wrap">
+            <i class="ph ph-magnifying-glass"></i>
+            <input type="search" id="book-search" data-testid="book-search"
+                placeholder="Search by title, author or genre…" autocomplete="off">
+            <span class="kbd-hint">Ctrl+K</span>
+        </div>
+
+        <!-- Tabs (Feature #11 Drag & Drop) -->
+        <div class="tab-bar" role="tablist">
+            <button class="tab-btn active" data-tab="manage" data-testid="tab-manage" role="tab">
+                <i class="ph ph-book-open"></i> Manage Books
+            </button>
+            <button class="tab-btn" data-tab="reorder" data-testid="tab-reorder" role="tab">
+                <i class="ph ph-arrows-out-cardinal"></i> Drag &amp; Reorder
+            </button>
+        </div>
+
+        <!-- ── TAB: Manage ────────────────────────────────── -->
+        <div id="tab-manage" class="tab-content active">
+            <div style="display:grid; grid-template-columns:360px 1fr; gap:1.5rem; align-items:start;">
+
+                <!-- Add / Edit Form -->
+                <div>
+                    <div class="card">
+                        <div class="section-header">
+                            <h2 id="form-title">Add a Book</h2>
+                        </div>
+                        <form id="book-form" data-testid="book-form" novalidate>
+                            <input type="hidden" id="book-id" data-testid="book-id">
+
+                            <!-- Autocomplete #12 via datalist -->
+                            <datalist id="author-suggestions"></datalist>
+
+                            <div class="form-group">
+                                <label for="book-title">Title</label>
+                                <input type="text" id="book-title" class="form-control" data-testid="book-title"
+                                    required minlength="2" maxlength="100" placeholder="e.g. The Great Gatsby">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="book-author">Author</label>
+                                <input type="text" id="book-author" class="form-control" data-testid="book-author"
+                                    required minlength="2" maxlength="100" pattern="^[a-zA-Z\s\.]+"
+                                    title="Letters, spaces and periods only" placeholder="e.g. F. Scott Fitzgerald"
+                                    list="author-suggestions">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="book-genre">Genre</label>
+                                <select id="book-genre" class="form-control" data-testid="book-genre" required>
+                                    <option value="">Select a genre</option>
+                                    <option value="Fiction">Fiction</option>
+                                    <option value="Non-Fiction">Non-Fiction</option>
+                                    <option value="Science">Science</option>
+                                    <option value="Fantasy">Fantasy</option>
+                                    <option value="Dystopian">Dystopian</option>
+                                    <option value="Romance">Romance</option>
+                                </select>
+                            </div>
+
+                            <!-- Multi-select Tags #8 -->
+                            <div class="form-group">
+                                <label for="book-tags">Tags <span
+                                        style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+                                <select id="book-tags" class="form-control" data-testid="book-tags" multiple>
+                                    <option value="Featured">Featured</option>
+                                    <option value="Classic">Classic</option>
+                                    <option value="Award Winner">Award Winner</option>
+                                    <option value="New Arrival">New Arrival</option>
+                                    <option value="Reserved">Reserved</option>
+                                    <option value="Available">Available</option>
+                                </select>
+                                <p class="multi-hint"><i class="ph ph-info"></i> Hold Ctrl / Cmd to select multiple</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="book-published">Published Date</label>
+                                <input type="date" id="book-published" class="form-control" data-testid="book-published"
+                                    required min="1000-01-01" max="2099-12-31" style="border-radius:var(--radius-sm);">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" id="book-submit-btn"
+                                style="width:100%;margin-top:0.5rem;" data-testid="book-submit">
+                                <i class="ph ph-plus"></i> Add Book
+                            </button>
+                            <button type="button" class="btn btn-ghost" id="book-cancel-btn"
+                                style="width:100%;margin-top:0.5rem;display:none;" data-testid="book-cancel">
+                                <i class="ph ph-x"></i> Cancel Edit
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Books Table -->
+                <div>
+                    <div class="card">
+                        <div class="section-header">
+                            <h2>Library Books</h2>
+                            <span id="total-count" data-testid="total-count"
+                                style="font-size:0.8rem;color:var(--text-light);font-weight:600;"></span>
+                        </div>
+
+                        <!-- Bulk Actions Bar #3 -->
+                        <div class="bulk-bar" id="bulk-bar" data-testid="bulk-bar">
+                            <i class="ph ph-check-square"></i>
+                            <span id="selected-count" data-testid="selected-count"></span>
+                            <button class="btn btn-danger" id="bulk-delete-btn" data-testid="bulk-delete-btn">
+                                <i class="ph ph-trash"></i> Delete Selected
+                            </button>
+                            <button class="btn btn-ghost" id="clear-selection-btn" data-testid="clear-selection-btn">
+                                Clear
+                            </button>
+                        </div>
+
+                        <!-- Spinner #6 -->
+                        <div class="spinner-wrap" id="table-spinner" data-testid="table-spinner">
+                            <div class="spinner"></div>
+                            <span>Loading books…</span>
+                        </div>
+
+                        <div class="table-wrap" id="table-wrap">
+                            <table data-testid="books-table">
+                                <thead>
+                                    <tr>
+                                        <!-- Checkboxes #3 -->
+                                        <th style="width:36px;">
+                                            <input type="checkbox" id="select-all" data-testid="select-all">
+                                        </th>
+                                        <!-- Sortable headers #4 -->
+                                        <th class="sortable" data-sort="title" data-testid="sort-title">
+                                            Title <span class="sort-icon">↕</span>
+                                        </th>
+                                        <th class="sortable" data-sort="author" data-testid="sort-author">
+                                            Author <span class="sort-icon">↕</span>
+                                        </th>
+                                        <th class="sortable" data-sort="genre" data-testid="sort-genre">
+                                            Genre <span class="sort-icon">↕</span>
+                                        </th>
+                                        <th>Tags</th>
+                                        <th class="sortable" data-sort="published" data-testid="sort-published">
+                                            Published <span class="sort-icon">↕</span>
+                                        </th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="books-tbody"></tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination #1 -->
+                        <div class="pagination" data-testid="pagination">
+                            <div class="page-controls">
+                                <button class="btn btn-ghost" id="prev-page" data-testid="prev-page">
+                                    <i class="ph ph-caret-left"></i> Prev
+                                </button>
+                                <button class="btn btn-ghost" id="next-page" data-testid="next-page">
+                                    Next <i class="ph ph-caret-right"></i>
+                                </button>
+                            </div>
+                            <span class="page-info" id="page-info" data-testid="page-info">Page 1 of 1</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ── TAB: Drag & Reorder #11 ───────────────────── -->
+        <div id="tab-reorder" class="tab-content">
+            <div class="card">
+                <div class="section-header">
+                    <h2>Drag &amp; Reorder Books</h2>
+                    <button class="btn btn-primary" id="save-order-btn" data-testid="save-order-btn">
+                        <i class="ph ph-floppy-disk"></i> Save Order
+                    </button>
+                </div>
+                <p style="font-size:0.875rem;color:var(--text-light);margin-bottom:1rem;">
+                    Drag the rows below to change the display order of books in the library.
+                </p>
+                <ul id="drag-list" class="drag-list" data-testid="drag-list"></ul>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Custom Delete Dialog #7 -->
+    <dialog id="delete-dialog" data-testid="delete-dialog">
+        <div class="dialog-body">
+            <h3>Remove Book</h3>
+            <p>Are you sure you want to remove <strong id="dialog-book-title"></strong> from the library?<br>
+                This action cannot be undone.</p>
+            <div class="dialog-actions">
+                <button class="btn btn-ghost" id="dialog-cancel" data-testid="dialog-cancel">
+                    Cancel
+                </button>
+                <button class="btn btn-danger" id="dialog-confirm" data-testid="dialog-confirm"
+                    style="border-radius:var(--radius-pill);padding:0.65rem 1.25rem;">
+                    <i class="ph ph-trash"></i> Yes, Remove
+                </button>
+            </div>
+        </div>
+    </dialog>
+
+    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="/src/books.js"></script>
+</body>
+
+</html>

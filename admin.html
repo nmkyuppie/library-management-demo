@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibraryMS — Admin Users</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+
+<body>
+
+    <header>
+        <a href="/admin.html" class="brand">
+            <div class="brand-icon"><i class="ph-fill ph-books"></i></div>
+            LibraryMS
+        </a>
+        <nav>
+            <a href="/admin.html" class="active" data-testid="nav-admin">
+                <i class="ph ph-users-three"></i> Admin Users
+            </a>
+            <a href="/books.html" data-testid="nav-books">
+                <i class="ph ph-book-open"></i> Books
+            </a>
+            <a href="#" id="logout-btn" class="nav-logout" data-testid="nav-logout">
+                <i class="ph ph-sign-out"></i> Logout
+            </a>
+        </nav>
+    </header>
+
+    <div class="container" style="display:grid; grid-template-columns:370px 1fr; gap:1.5rem; align-items:start;">
+
+        <!-- Add / Edit Form -->
+        <div>
+            <div class="card">
+                <div class="section-header">
+                    <h2 id="user-form-title">Add Admin User</h2>
+                </div>
+
+                <form id="user-form" data-testid="user-form" novalidate>
+                    <input type="hidden" id="user-id" data-testid="user-id">
+
+                    <!-- Profile Photo Upload (Feature #9) -->
+                    <div class="form-group">
+                        <label>Profile Photo <span
+                                style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+                        <img id="photo-preview" class="photo-preview" src="#" alt="Preview" data-testid="photo-preview">
+                        <div class="file-upload-wrap" data-testid="photo-upload-wrap">
+                            <input type="file" id="user-photo" accept="image/*" data-testid="user-photo">
+                            <i class="ph ph-camera"></i>
+                            <p>Click to upload a profile photo</p>
+                        </div>
+                        <input type="hidden" id="user-photo-data" data-testid="user-photo-data">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-name">Full Name</label>
+                        <input type="text" id="user-name" class="form-control" data-testid="user-name" required
+                            minlength="2" maxlength="80" pattern="^[a-zA-Z\s]+" title="Letters and spaces only"
+                            placeholder="e.g. Alice Johnson">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-email">Email Address</label>
+                        <input type="email" id="user-email" class="form-control" data-testid="user-email" required
+                            placeholder="e.g. alice@library.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-password">Password</label>
+                        <input type="password" id="user-password" class="form-control" data-testid="user-password"
+                            required minlength="5" placeholder="Min. 5 characters">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Role</label>
+                        <div class="radio-group" data-testid="user-role-group">
+                            <label class="radio-option">
+                                <input type="radio" name="user-role" id="role-admin" value="admin"
+                                    data-testid="role-admin" checked>
+                                Admin
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="user-role" id="role-editor" value="editor"
+                                    data-testid="role-editor">
+                                Editor
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="user-role" id="role-viewer" value="viewer"
+                                    data-testid="role-viewer">
+                                Viewer
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="user-submit-btn"
+                        style="width:100%;margin-top:0.5rem;" data-testid="user-submit">
+                        <i class="ph ph-plus"></i> Add User
+                    </button>
+                    <button type="button" class="btn btn-ghost" id="user-cancel-btn"
+                        style="width:100%;margin-top:0.5rem;display:none;" data-testid="user-cancel">
+                        <i class="ph ph-x"></i> Cancel Edit
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right column -->
+        <div>
+            <!-- Users Table -->
+            <div class="card">
+                <div class="section-header">
+                    <h2>Admin Users</h2>
+                </div>
+                <div class="table-wrap">
+                    <table data-testid="users-table">
+                        <thead>
+                            <tr>
+                                <th nowrap>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Iframe Viewer -->
+            <div class="card">
+                <div class="section-header">
+                    <h2>User Detail Viewer</h2>
+                    <span style="font-size:0.8rem;color:var(--text-light);">Click View on a row</span>
+                </div>
+                <div class="iframe-container">
+                    <iframe id="user-detail-iframe" src="/user-detail.html" data-testid="user-iframe"></iframe>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="/src/admin.js"></script>
+</body>
+
+</html>
